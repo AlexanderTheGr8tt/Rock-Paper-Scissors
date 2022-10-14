@@ -10,11 +10,19 @@ def print_pause(message_to_print):
 
 
 class Player:
+    my_move = random.choice(moves)
+    their_move = random.choice(moves)
+
     def move(self):
-        return 'rock'
+        return 
 
     def learn(self, my_move, their_move):
         pass
+
+
+class AllRockPlayer(Player):
+    def move(self):
+        return 'rock'
 
 
 class RandomPlayer(Player):
@@ -25,36 +33,21 @@ class RandomPlayer(Player):
 class HumanPlayer(Player):
     def move(self):
         while True:
-            player_pick = input("Rock, paper, scissors? > ")
-            if player_pick in moves:
-                return player_pick
+            move = input("Rock, paper, scissors? > ").lower()
+            if move in moves:
+                return move
+            print(f"The move {move} is invalid. Try again!")
 
 
 class ReflectPlayer(Player):
-    their_move = "None"
-
     def move(self):
-        if self.their_move == "None":
-            return random.choice(moves)
-        else:
-            return self.their_move
-
-    def learn(self, my_move, their_move):
-        self.their_move = their_move
+        return self.their_move
 
 
 class CyclePlayer(Player):
-    my_move = "None"
-
     def move(self):
-        if self.my_move == "rock":
-            return "paper"
-        elif self.my_move == "paper":
-            return "scissors"
-        elif self.my_move == "scissors":
-            return "rock"
-        else:
-            return random.choice(moves)
+        index = moves.index(self.my_move) + 1
+        return moves[index % len(moves)]
 
     def learn(self, my_move, their_move):
         self.my_move = my_move
@@ -67,30 +60,30 @@ def beats(one, two):
 
 
 class Game:
+    p1_score = 0
+    p2_score = 0
 
     def __init__(self, p1, p2):
         self.p1 = p1
         self.p2 = p2
-        self.p1_score = 0
-        self.p2_score = 0
 
     def play_round(self):
         move1 = self.p1.move()
         move2 = self.p2.move()
         print_pause(f"You choose {move1}.\n"
                     f"Your rival played {move2}.")
+        if move1 == move2:
+            print_pause("** Draw **")
         if beats(move1, move2):
             print_pause("** Player One Wins! **")
             self.p1_score += 1
-        elif beats(move2, move1):
+        else:
             print_pause("** Player Two Wins! **")
             self.p2_score += 1
-        else:
-            print_pause("** Draw **")
         self.p1.learn(move1, move2)
         self.p2.learn(move2, move1)
-        print(f"Points: Player One: {self.p1_score},"
-              f"Player Two: {self.p2_score}\n")
+        print(f"Points: Player One {self.p1_score}, "
+              f"Player Two {self.p2_score}\n")
 
     def play_game(self):
         print_pause("Rock Paper Scissors, Start!\n")
@@ -118,12 +111,12 @@ class Game:
                 print_pause("Thanks for playing! See you next time.")
                 break
             else:
-                Game.play_again()
+                self.play_again()
 
 
 if __name__ == '__main__':
     p1 = HumanPlayer()
-    player = [ReflectPlayer(), RandomPlayer(), Player(), CyclePlayer()]
+    player = [ReflectPlayer(), RandomPlayer(), AllRockPlayer(), CyclePlayer()]
     p2 = random.choice(player)
     game = Game(p1, p2)
     game.play_game()
