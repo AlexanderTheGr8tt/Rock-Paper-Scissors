@@ -14,7 +14,7 @@ class Player:
     their_move = random.choice(moves)
 
     def move(self):
-        return 
+        return
 
     def learn(self, my_move, their_move):
         pass
@@ -32,11 +32,7 @@ class RandomPlayer(Player):
 
 class HumanPlayer(Player):
     def move(self):
-        while True:
-            move = input("Rock, paper, scissors? > ").lower()
-            if move in moves:
-                return move
-            print(f"The move {move} is invalid. Try again!")
+        return valid_input("Rock, Paper or Scissors? > ", moves)
 
 
 class ReflectPlayer(Player):
@@ -85,39 +81,59 @@ class Game:
         print(f"Points: Player One {self.p1_score}, "
               f"Player Two {self.p2_score}\n")
 
-    def play_game(self):
-        print_pause("Rock Paper Scissors, Start!\n")
-        self.rounds = 3
-        for round in range(self.rounds):
-            print_pause(f"Round {round + 1}")
+    def play_game(self, rounds):
+        for round in range(rounds):
             self.play_round()
-        print_pause("Game over!")
-        print_pause(f"Player One score is {self.p1_score},"
-                    f" and Player Two score is {self.p2_score}\n")
-        if self.p1_score > self.p2_score:
-            print_pause("Player One Wins the whole game!\n")
-        elif self.p1_score < self.p2_score:
-            print_pause("Player Two Wins the whole game!\n")
-        else:
-            print_pause("No one wins\n")
 
-    def play_again(self):
-        while True:
-            decision = input("Would you like to play again? (y/n)\n").lower()
-            if decision == 'y':
-                print_pause("Excellent! Restarting the game ...")
-                self.play_game()
-            elif decision == 'n':
-                print_pause("Thanks for playing! See you next time.")
-                break
-            else:
-                self.play_again()
+
+def valid_input(prompt, options):
+    while True:
+        option = input(prompt).lower()
+        if option in options:
+            return option
+        print(f'Sorry, the option "{option}" is invalid. Try again!')
+
+
+def play_again():
+    choice = valid_input('Would you like to play again? (y/n):', ['n', 'y'])
+    if choice == 'n':
+        print('Thanks for playing! See you next time.')
+        exit(0)
+
+
+def get_rounds():
+    options = []
+    max_rounds = 10
+    for x in range(1, max_rounds + 1):
+        options.append(str(x))
+    return int(valid_input(f'Rounds? (from 1 to {max_rounds})', options))
+
+
+def get_opponent():
+    return valid_input('Choose the opponent player:\n'
+                       '1 - Always rock\n'
+                       '2 - Random\n'
+                       '3 - Reflect\n'
+                       '4 - Cycle\n',
+                       ['1', '2', '3', '4'])
+
+
+def game():
+    while True:
+        opponents = {
+            '1': AllRockPlayer(),
+            '2': RandomPlayer(),
+            '3': ReflectPlayer(),
+            '4': CyclePlayer()
+        }
+        p1 = HumanPlayer()
+        p2 = opponents[get_opponent()]
+        game = Game(p1, p2)
+        rounds = get_rounds()
+        game.play_game(rounds)
+
+        play_again()
 
 
 if __name__ == '__main__':
-    p1 = HumanPlayer()
-    player = [ReflectPlayer(), RandomPlayer(), AllRockPlayer(), CyclePlayer()]
-    p2 = random.choice(player)
-    game = Game(p1, p2)
-    game.play_game()
-    game.play_again()
+    game()
