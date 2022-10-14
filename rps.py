@@ -94,16 +94,19 @@ class Game:
 
     def play_game(self):
         print_pause("Rock Paper Scissors, Start!\n")
-        for round in range(3):
+        self.rounds = 3
+        for round in range(self.rounds):
             print_pause(f"Round {round + 1}")
             self.play_round()
         print_pause("Game over!")
+        print_pause(f"Player One score is {self.p1_score},"
+                    f" and Player Two score is {self.p2_score}\n")
         if self.p1_score > self.p2_score:
-            print_pause("Player One Wins the whole game!")
+            print_pause("Player One Wins the whole game!\n")
         elif self.p1_score < self.p2_score:
-            print_pause("Player Two Wins the whole game!")
+            print_pause("Player Two Wins the whole game!\n")
         else:
-            print_pause("No one wins")
+            print_pause("No one wins\n")
 
     def play_again(self):
         while True:
